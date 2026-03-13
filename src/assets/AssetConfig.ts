@@ -1,5 +1,6 @@
 export const ASSETS = {
-  GAME_BG: "src/assets/images/GameBg.png",
+  GAME_MENU_BG: "src/assets/images/GameMenuBg.png",
+  GAME_PLAY_BG: "src/assets/images/GamePlayBg.png",
   GAME_OVER: "src/assets/images/GameOver.png",
 
   PLAYER: "src/assets/sprites/Player.png",

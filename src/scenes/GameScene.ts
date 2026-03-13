@@ -1,7 +1,7 @@
 import { Scene, SceneManager } from "../game/SceneManager";
 import { TileMap } from "../map/TileMap";
 import { Keyboard } from "../input/Keyboard";
-import { Assets, Container, Text } from "pixi.js";
+import { Assets, Container, Text, TilingSprite } from "pixi.js";
 import { generateMapData } from "../map/MapData";
 import { ASSETS } from "../assets/AssetConfig";
 
@@ -23,6 +23,7 @@ import { GameOverScene } from "./GameOverScene";
 
 export class GameScene extends Scene {
   private player!: Player;
+  private background!: TilingSprite;
   private enemies: Enemy[] = [];
   private coins: Coin[] = [];
   private tileMap!: TileMap;
@@ -50,6 +51,7 @@ export class GameScene extends Scene {
     Keyboard.init();
 
     this.textures = {
+      background: Assets.get(ASSETS.GAME_PLAY_BG),
       player: Assets.get(ASSETS.PLAYER),
       ground: Assets.get(ASSETS.GROUND),
       brick: Assets.get(ASSETS.BRICK),
@@ -58,6 +60,13 @@ export class GameScene extends Scene {
       enemy: Assets.get(ASSETS.ENEMY),
       coin: Assets.get(ASSETS.COIN),
     };
+
+    this.background = new TilingSprite({
+      texture: this.textures.background,
+      width: 800,
+      height: 600
+    });
+    this.addChild(this.background);
 
     this.world = new Container();
     this.addChild(this.world);
@@ -123,6 +132,10 @@ export class GameScene extends Scene {
 
     // --- 4. Camera & World Systems ---
     cameraSystem(this.world, this.player, mapWidth, mapHeight);
+
+    // --- 5. Background Parallax ---
+    this.background.tilePosition.x = this.world.x * 0.5;
+    this.background.tilePosition.y = this.world.y * 0.1;
 
     if (this.player.sprite.y > mapHeight + 100) {
       this.gameOver("FELL INTO PIT!");

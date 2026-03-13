@@ -14,7 +14,7 @@ export class MenuScene extends Scene {
 
   private init() {
     // 1. Get preloaded background
-    const bgTexture = Assets.get(ASSETS.GAME_BG);
+    const bgTexture = Assets.get(ASSETS.GAME_MENU_BG);
     if (bgTexture) {
       const background = new Sprite(bgTexture);
       background.width = 800;
