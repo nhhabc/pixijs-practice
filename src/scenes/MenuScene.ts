@@ -46,7 +46,7 @@ export class MenuScene extends Scene {
     // 3. Play Button Container
     const btnContainer = new Container();
     btnContainer.x = 400;
-    btnContainer.y = 420;
+    btnContainer.y = 520;
     btnContainer.eventMode = 'static';
     btnContainer.cursor = "pointer";
 
