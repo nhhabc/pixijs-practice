@@ -1,4 +1,3 @@
-// ─── Tile Constants ──────────────────────────────────────────────────────────
 export const TILE_SIZE = 32;
 
 export enum TileType {
@@ -12,67 +11,136 @@ const MAX_TILES = 1000;
 
 export function generateMapData(): number[][] {
   const rows = 18;
-  const grid: number[][] = Array.from({ length: rows }, () => Array(MAX_TILES).fill(0));
-  const R = (idx: number) => grid[idx];
-  const G = grid[rows - 1]; // Ground row
+  const grid: number[][] = Array.from({ length: rows }, () =>
+    Array(MAX_TILES).fill(TileType.EMPTY)
+  );
 
-  // Fill initial ground
-  G.fill(1);
+  const groundRow = rows - 1;
 
-  // 1. Start area (0-20) - Always safe
-  for (let i = 0; i < 20; i++) G[i] = 1;
+  const G = grid[groundRow];
+  const R = (y: number) => grid[y];
 
-  // 2. Procedural Generation for the rest
-  let currentX = 20;
-  while (currentX < MAX_TILES - 20) {
-    const chunkType = Math.random();
-    const chunkLength = 10 + Math.floor(Math.random() * 15);
+  // ─────────────────────────────────────────────
+  // Base ground
+  G.fill(TileType.GROUND);
 
-    if (chunkType < 0.2) {
-      // Pits
-      for (let i = 0; i < 3 + Math.floor(Math.random() * 3); i++) {
-        if (currentX + i < MAX_TILES - 20) G[currentX + i] = 0;
+  // ─────────────────────────────────────────────
+  // Start safe zone
+  for (let i = 0; i < 25; i++) {
+    G[i] = TileType.GROUND;
+  }
+
+  let currentX = 25;
+
+  while (currentX < MAX_TILES - 40) {
+    const chunk = Math.random();
+
+    // ───────────────── PIT JUMP
+    if (chunk < 0.2) {
+      const width = 3 + Math.floor(Math.random() * 4);
+
+      for (let i = 0; i < width; i++) {
+        G[currentX + i] = TileType.EMPTY;
       }
-      // Add a platform above the pit half the time
+
       if (Math.random() > 0.5) {
-        for (let i = 0; i < 4; i++) R(13)[currentX + i] = TileType.BRICK;
+        for (let i = 0; i < width; i++) {
+          R(13)[currentX + i] = TileType.BRICK;
+        }
       }
-      currentX += 6;
-    } else if (chunkType < 0.4) {
-      // Staircase or Walls
-      const height = 1 + Math.floor(Math.random() * 4);
+
+      currentX += width + 3;
+    }
+
+    // ───────────────── DOUBLE PIT (hard)
+    else if (chunk < 0.35) {
+      const width = 3;
+
+      for (let i = 0; i < width; i++) {
+        G[currentX + i] = TileType.EMPTY;
+      }
+
+      for (let i = 0; i < width; i++) {
+        G[currentX + width + 2 + i] = TileType.EMPTY;
+      }
+
+      R(13)[currentX + width + 1] = TileType.BRICK;
+
+      currentX += width * 2 + 5;
+    }
+
+    // ───────────────── FLOATING PARKOUR
+    else if (chunk < 0.55) {
+      const platforms = 5 + Math.floor(Math.random() * 4);
+
+      for (let i = 0; i < platforms; i++) {
+        const x = currentX + i * 3;
+        const y = 11 + Math.floor(Math.random() * 3);
+
+        R(y)[x] = TileType.BRICK;
+
+        if (Math.random() > 0.6) {
+          R(y)[x + 1] = TileType.QUESTION;
+        }
+      }
+
+      currentX += platforms * 3;
+    }
+
+    // ───────────────── STAIRS
+    else if (chunk < 0.75) {
+      const height = 3 + Math.floor(Math.random() * 4);
+
       for (let i = 0; i < height; i++) {
-        for (let j = i; j < height; j++) {
-          if (currentX + i < MAX_TILES - 20) R(rows - 2 - j)[currentX + i] = 1;
+        for (let j = 0; j <= i; j++) {
+          R(groundRow - j)[currentX + i] = TileType.GROUND;
         }
       }
-      currentX += height + 2;
-    } else if (chunkType < 0.7) {
-      // Floating bricks & Questions
-      for (let i = 0; i < chunkLength; i++) {
-        if (Math.random() < 0.3) {
-          R(12)[currentX + i] = (Math.random() > 0.7) ? TileType.QUESTION : TileType.BRICK;
+
+      currentX += height + 3;
+    }
+
+    // ───────────────── CEILING TRAP
+    else if (chunk < 0.9) {
+      const length = 10;
+
+      for (let i = 0; i < length; i++) {
+        if (Math.random() > 0.6) {
+          R(12)[currentX + i] = TileType.BRICK;
+        }
+
+        if (Math.random() > 0.8) {
+          R(10)[currentX + i] = TileType.BRICK;
         }
       }
-      currentX += chunkLength;
-    } else {
-      // Ground with some obstacles
-      if (Math.random() > 0.6) {
-        const obsX = currentX + Math.floor(Math.random() * 5);
-        R(rows - 2)[obsX] = TileType.BRICK;
-        R(rows - 3)[obsX] = TileType.BRICK;
+
+      currentX += length;
+    }
+
+    // ───────────────── BROKEN GROUND
+    else {
+      const length = 12;
+
+      for (let i = 0; i < length; i++) {
+        if (Math.random() > 0.7) {
+          G[currentX + i] = TileType.EMPTY;
+        }
       }
-      currentX += chunkLength;
+
+      currentX += length;
     }
   }
 
-  // 3. Victory Run (Last 20 tiles)
-  for (let i = MAX_TILES - 20; i < MAX_TILES; i++) {
-    G[i] = 1;
+  // ───────────────── END AREA
+  for (let i = MAX_TILES - 30; i < MAX_TILES; i++) {
+    G[i] = TileType.GROUND;
   }
-  R(rows - 2)[MAX_TILES - 5] = 1;
-  R(rows - 3)[MAX_TILES - 5] = 1;
-  R(rows - 4)[MAX_TILES - 5] = 1;
+
+  // flag pole style stairs
+  R(rows - 2)[MAX_TILES - 10] = TileType.GROUND;
+  R(rows - 3)[MAX_TILES - 10] = TileType.GROUND;
+  R(rows - 4)[MAX_TILES - 10] = TileType.GROUND;
+  R(rows - 5)[MAX_TILES - 10] = TileType.GROUND;
 
   return grid;
 }

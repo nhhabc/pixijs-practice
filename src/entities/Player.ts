@@ -16,6 +16,7 @@ export function createPlayer(texture: any, x: number, y?: number): Player {
   sprite.width = 32;
   sprite.height = 32;
   // Mark as player for collision system padding logic
+  (sprite as any).isPlayer = true;
 
   return {
     sprite,
