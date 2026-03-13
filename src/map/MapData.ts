@@ -15,25 +15,25 @@ export enum TileType {
 // ─── Map Layout ───────────────────────────────────────────────────────────────
 // 0 = empty | 1 = solid ground | 2 = brick | 3 = question block
 //
-const MAX_WIDTH = 300;
-const R0 = Array(MAX_WIDTH).fill(0);
-const R1 = Array(MAX_WIDTH).fill(0);
-const R2 = Array(MAX_WIDTH).fill(0);
-const R3 = Array(MAX_WIDTH).fill(0);
-const R4 = Array(MAX_WIDTH).fill(0);
-const R5 = Array(MAX_WIDTH).fill(0);
-const R6 = Array(MAX_WIDTH).fill(0);
-const R7 = Array(MAX_WIDTH).fill(0);
-const R8 = Array(MAX_WIDTH).fill(0);
-const R9 = Array(MAX_WIDTH).fill(0);
-const R10 = Array(MAX_WIDTH).fill(0);
-const R11 = Array(MAX_WIDTH).fill(0);
-const R12 = Array(MAX_WIDTH).fill(0);
-const R13 = Array(MAX_WIDTH).fill(0);
-const R14 = Array(MAX_WIDTH).fill(0);
-const R15 = Array(MAX_WIDTH).fill(0);
-const R16 = Array(MAX_WIDTH).fill(0);
-const G = Array(MAX_WIDTH).fill(1); // Ground row
+const MAX_TILES = 300;
+const R0 = Array(MAX_TILES).fill(0);
+const R1 = Array(MAX_TILES).fill(0);
+const R2 = Array(MAX_TILES).fill(0);
+const R3 = Array(MAX_TILES).fill(0);
+const R4 = Array(MAX_TILES).fill(0);
+const R5 = Array(MAX_TILES).fill(0);
+const R6 = Array(MAX_TILES).fill(0);
+const R7 = Array(MAX_TILES).fill(0);
+const R8 = Array(MAX_TILES).fill(0);
+const R9 = Array(MAX_TILES).fill(0);
+const R10 = Array(MAX_TILES).fill(0);
+const R11 = Array(MAX_TILES).fill(0);
+const R12 = Array(MAX_TILES).fill(0);
+const R13 = Array(MAX_TILES).fill(0);
+const R14 = Array(MAX_TILES).fill(0);
+const R15 = Array(MAX_TILES).fill(0);
+const R16 = Array(MAX_TILES).fill(0);
+const G = Array(MAX_TILES).fill(1); // Ground row
 
 // --- Decorations and Obstacles ---
 

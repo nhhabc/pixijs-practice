@@ -28,7 +28,14 @@ export class LoadingScene extends Scene {
     try {
       await Assets.load([
         "src/assets/images/GameBg.png",
-        "src/assets/images/GameOver.png"
+        "src/assets/images/GameOver.png",
+        "src/assets/images/Player.png",
+        "src/assets/images/Ground.png",
+        "src/assets/images/Brick.png",
+        "src/assets/images/Question.png",
+        "src/assets/images/Empty.png",
+        "src/assets/images/Enemy.png",
+        "src/assets/images/Coin.png",
       ]);
 
       // Small delay to show loading screen

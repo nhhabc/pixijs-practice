@@ -21,7 +21,6 @@ export class Tile extends Sprite {
   /** Called when player hit tile from below. */
   hitFromBelow(): string | void {
     if (this.tileType === TileType.BRICK) {
-      this.destroy();
       return "brick_break";
     }
 

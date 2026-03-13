@@ -10,7 +10,7 @@ export class GameOverScene extends Scene {
 
   private async init(reason: string) {
     // Load background
-    const bgTexture = await Assets.load("src/assets/images/GameOver.png");
+    const bgTexture = Assets.get("src/assets/images/GameOver.png");
     const background = new Sprite(bgTexture);
     background.width = 800;
     background.height = 600;

@@ -36,13 +36,13 @@ export class GameScene extends Scene {
     Keyboard.init();
 
     this.textures = {
-      player: await Assets.load("src/assets/images/Player.png"),
-      ground: await Assets.load("src/assets/images/Ground.png"),
-      brick: await Assets.load("src/assets/images/Brick.png"),
-      question: await Assets.load("src/assets/images/Question.png"),
-      empty: await Assets.load("src/assets/images/Empty.png"),
-      enemy: await Assets.load("src/assets/images/Enemy.png"),
-      coin: await Assets.load("src/assets/images/Coin.png"),
+      player: Assets.get("src/assets/images/Player.png"),
+      ground: Assets.get("src/assets/images/Ground.png"),
+      brick: Assets.get("src/assets/images/Brick.png"),
+      question: Assets.get("src/assets/images/Question.png"),
+      empty: Assets.get("src/assets/images/Empty.png"),
+      enemy: Assets.get("src/assets/images/Enemy.png"),
+      coin: Assets.get("src/assets/images/Coin.png"),
     };
 
     this.world = new Container();
@@ -118,7 +118,7 @@ export class GameScene extends Scene {
     // Check fell into pit
     const mapHeight = mapData.length * 32;
     if (this.player.y > mapHeight + 100) {
-      this.gameOver("FELL INTO THE PIT!");
+      this.gameOver("FELL INTO PIT!");
     }
 
     this.player.update();
@@ -197,9 +197,9 @@ export class GameScene extends Scene {
 
       if (aabbOverlap(pRect, eRect)) {
         // Player jumps on enemy
-        if (this.player.vy > 0 && this.player.y + this.player.height < enemy.y + 20) {
+        if (this.player.vy > 0 && this.player.y + this.player.height < enemy.y + 30) {
           enemy.die();
-          this.player.vy = -8;
+          this.player.vy = -8; // bounce
           this.updateScore(1);
         } else {
           this.gameOver();
@@ -217,10 +217,10 @@ export class GameScene extends Scene {
       if (!aabbOverlap(entRect, tRect)) continue;
 
       if (entity.vx > 0) {
-        entity.x = tRect.x - entity.width;
+        entity.x = tRect.x - entity.width; // stop at right side of tile
         if (entity instanceof Enemy) entity.vx *= -1;
       } else if (entity.vx < 0) {
-        entity.x = tRect.x + tRect.width;
+        entity.x = tRect.x + tRect.width; // stop at left side of tile
         if (entity instanceof Enemy) entity.vx *= -1;
       }
     }
