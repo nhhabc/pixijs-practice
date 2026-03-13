@@ -1,6 +1,7 @@
 import { Text, TextStyle, Assets } from "pixi.js";
 import { Scene, SceneManager } from "../game/SceneManager";
 import { MenuScene } from "./MenuScene";
+import { ASSETS } from "../assets/AssetConfig";
 
 export class LoadingScene extends Scene {
   private loadingText!: Text;
@@ -26,17 +27,7 @@ export class LoadingScene extends Scene {
 
     // Load essential UI assets
     try {
-      await Assets.load([
-        "src/assets/images/GameBg.png",
-        "src/assets/images/GameOver.png",
-        "src/assets/images/Player.png",
-        "src/assets/images/Ground.png",
-        "src/assets/images/Brick.png",
-        "src/assets/images/Question.png",
-        "src/assets/images/Empty.png",
-        "src/assets/images/Enemy.png",
-        "src/assets/images/Coin.png",
-      ]);
+      await Assets.load(Object.values(ASSETS));
 
       // Small delay to show loading screen
       setTimeout(() => {

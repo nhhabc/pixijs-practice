@@ -1,6 +1,7 @@
 import { Container, Text, TextStyle, Graphics, Assets, Sprite } from "pixi.js";
 import { Scene, SceneManager } from "../game/SceneManager";
 import { GameScene } from "./GameScene";
+import { ASSETS } from "../assets/AssetConfig";
 
 export class MenuScene extends Scene {
   private title!: Text;
@@ -13,7 +14,7 @@ export class MenuScene extends Scene {
 
   private init() {
     // 1. Get preloaded background
-    const bgTexture = Assets.get("src/assets/images/GameBg.png");
+    const bgTexture = Assets.get(ASSETS.GAME_BG);
     if (bgTexture) {
       const background = new Sprite(bgTexture);
       background.width = 800;

@@ -9,6 +9,7 @@ import { aabbOverlap, spriteRect } from "../systems/Collision";
 import { Assets, Container, Text } from "pixi.js";
 import { GameOverScene } from "./GameOverScene";
 import { mapData } from "../map/MapData";
+import { ASSETS } from "../assets/AssetConfig";
 
 export class GameScene extends Scene {
   private player!: Player;
@@ -36,13 +37,13 @@ export class GameScene extends Scene {
     Keyboard.init();
 
     this.textures = {
-      player: Assets.get("src/assets/images/Player.png"),
-      ground: Assets.get("src/assets/images/Ground.png"),
-      brick: Assets.get("src/assets/images/Brick.png"),
-      question: Assets.get("src/assets/images/Question.png"),
-      empty: Assets.get("src/assets/images/Empty.png"),
-      enemy: Assets.get("src/assets/images/Enemy.png"),
-      coin: Assets.get("src/assets/images/Coin.png"),
+      player: Assets.get(ASSETS.PLAYER),
+      ground: Assets.get(ASSETS.GROUND),
+      brick: Assets.get(ASSETS.BRICK),
+      question: Assets.get(ASSETS.QUESTION),
+      empty: Assets.get(ASSETS.EMPTY),
+      enemy: Assets.get(ASSETS.ENEMY),
+      coin: Assets.get(ASSETS.COIN),
     };
 
     this.world = new Container();

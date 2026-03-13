@@ -1,6 +1,7 @@
 import { Text, TextStyle, Graphics, Container, Assets, Sprite } from "pixi.js";
 import { Scene, SceneManager } from "../game/SceneManager";
 import { GameScene } from "./GameScene";
+import { ASSETS } from "../assets/AssetConfig";
 
 export class GameOverScene extends Scene {
   constructor(private sceneManager: SceneManager, reason: string = "GAME OVER") {
@@ -10,7 +11,7 @@ export class GameOverScene extends Scene {
 
   private async init(reason: string) {
     // Load background
-    const bgTexture = Assets.get("src/assets/images/GameOver.png");
+    const bgTexture = Assets.get(ASSETS.GAME_OVER);
     const background = new Sprite(bgTexture);
     background.width = 800;
     background.height = 600;
