@@ -1,6 +1,6 @@
 import { Application } from "pixi.js";
 import { SceneManager } from "./game/SceneManager";
-import { LoadingScene } from "./screens/LoadingScene";
+import { LoadingScene } from "./scenes/LoadingScene";
 
 async function init() {
 

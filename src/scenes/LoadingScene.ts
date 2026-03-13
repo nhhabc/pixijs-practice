@@ -1,7 +1,7 @@
 import { Text, TextStyle, Assets } from "pixi.js";
 import { Scene, SceneManager } from "../game/SceneManager";
-import { MenuScene } from "./MenuScene";
 import { ASSETS } from "../assets/AssetConfig";
+import { MenuScene } from "./MenuScene";
 
 export class LoadingScene extends Scene {
   private loadingText!: Text;
@@ -40,6 +40,8 @@ export class LoadingScene extends Scene {
   }
 
   update(_delta: number) {
-    this.loadingText.alpha = 0.5 + Math.sin(Date.now() * 0.01) * 0.5;
+    if (this.loadingText) {
+       this.loadingText.alpha = 0.5 + Math.sin(Date.now() * 0.01) * 0.5;
+    }
   }
 }

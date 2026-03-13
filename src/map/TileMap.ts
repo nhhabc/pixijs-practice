@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
-import { TILE_SIZE, TileType, mapData } from "./MapData";
-import { Tile } from "../objects/Tile";
+import { TILE_SIZE, TileType } from "./MapData";
+import { Tile } from "./Tile";
 
 /**
  * TileMap — manage the entire tile map.
@@ -18,14 +18,14 @@ export class TileMap extends Container {
   /** All solid tiles (for collision loop). */
   readonly solidTiles: Tile[] = [];
 
-  constructor(textures: Record<string, any>) {
+  constructor(textures: Record<string, any>, private mapData: number[][]) {
     super();
 
-    for (let row = 0; row < mapData.length; row++) {
+    for (let row = 0; row < this.mapData.length; row++) {
       this.grid[row] = [];
 
-      for (let col = 0; col < mapData[row].length; col++) {
-        const type = mapData[row][col] as TileType;
+      for (let col = 0; col < this.mapData[row].length; col++) {
+        const type = this.mapData[row][col] as TileType;
 
         if (type === TileType.EMPTY) {
           this.grid[row][col] = null;

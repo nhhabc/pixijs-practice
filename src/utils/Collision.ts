@@ -40,24 +40,3 @@ export function spriteRect(sprite: Sprite, offsetX = 0, offsetY = 0): Rect {
     height: sprite.height,
   };
 }
-
-/**
- * Resolve collision X. 
- * Return penetration depth (positive = a moves right colliding b, negative = a moves left colliding b)
- */
-export function resolveX(a: Rect, b: Rect): number {
-  const overlapRight = (a.x + a.width) - b.x;           // a collide left side of b
-  const overlapLeft = (b.x + b.width) - a.x;           // a collide right side of b
-  return overlapRight < overlapLeft ? overlapRight : -overlapLeft;
-}
-
-/**
- * Resolve collision Y.
- *
- * @returns penetration depth (positive = a moves down colliding b, negative = a moves up colliding b)
- */
-export function resolveY(a: Rect, b: Rect): number {
-  const overlapBottom = (a.y + a.height) - b.y;           // a collide top side of b
-  const overlapTop = (b.y + b.height) - a.y;           // a collide bottom side of b
-  return overlapBottom < overlapTop ? overlapBottom : -overlapTop;
-}

@@ -1,5 +1,6 @@
 import { Sprite, Texture } from "pixi.js";
-import { TileType } from "../map/MapData";
+import { TileType } from "./MapData";
+import { ASSETS } from "../assets/AssetConfig";
 
 /**
  * Tile — tile from map.
@@ -26,7 +27,7 @@ export class Tile extends Sprite {
 
     if (this.tileType === TileType.QUESTION && !this.used) {
       this.used = true;
-      this.texture = Texture.from("src/assets/images/Empty.png");
+      this.texture = Texture.from(ASSETS.EMPTY);
       return "spawn_coin";
     }
   }

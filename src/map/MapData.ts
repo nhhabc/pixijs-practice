@@ -8,86 +8,73 @@ export enum TileType {
   QUESTION = 3,
 }
 
-// ─── Map Layout ───────────────────────────────────────────────────────────────
-// 0 = empty | 1 = solid ground | 2 = brick | 3 = question block
-//
-// Column index:  0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
-// ─── Map Layout ───────────────────────────────────────────────────────────────
-// 0 = empty | 1 = solid ground | 2 = brick | 3 = question block
-//
-const MAX_TILES = 300;
-const R0 = Array(MAX_TILES).fill(0);
-const R1 = Array(MAX_TILES).fill(0);
-const R2 = Array(MAX_TILES).fill(0);
-const R3 = Array(MAX_TILES).fill(0);
-const R4 = Array(MAX_TILES).fill(0);
-const R5 = Array(MAX_TILES).fill(0);
-const R6 = Array(MAX_TILES).fill(0);
-const R7 = Array(MAX_TILES).fill(0);
-const R8 = Array(MAX_TILES).fill(0);
-const R9 = Array(MAX_TILES).fill(0);
-const R10 = Array(MAX_TILES).fill(0);
-const R11 = Array(MAX_TILES).fill(0);
-const R12 = Array(MAX_TILES).fill(0);
-const R13 = Array(MAX_TILES).fill(0);
-const R14 = Array(MAX_TILES).fill(0);
-const R15 = Array(MAX_TILES).fill(0);
-const R16 = Array(MAX_TILES).fill(0);
-const G = Array(MAX_TILES).fill(1); // Ground row
+const MAX_TILES = 1000;
 
-// --- Decorations and Obstacles ---
+export function generateMapData(): number[][] {
+  const rows = 18;
+  const grid: number[][] = Array.from({ length: rows }, () => Array(MAX_TILES).fill(0));
+  const R = (idx: number) => grid[idx];
+  const G = grid[rows - 1]; // Ground row
 
-// Start area (0-15) - Empty
+  // Fill initial ground
+  G.fill(1);
 
-// First platform (20-30)
-for (let i = 20; i < 25; i++) R13[i] = TileType.BRICK;
-R13[22] = TileType.QUESTION;
+  // 1. Start area (0-20) - Always safe
+  for (let i = 0; i < 20; i++) G[i] = 1;
 
-// Pits (35-37, 50-53)
-G[35] = G[36] = G[37] = 0;
-G[50] = G[51] = G[52] = G[53] = 0;
+  // 2. Procedural Generation for the rest
+  let currentX = 20;
+  while (currentX < MAX_TILES - 20) {
+    const chunkType = Math.random();
+    const chunkLength = 10 + Math.floor(Math.random() * 15);
 
-// Floating bricks (40-45)
-R12[40] = 2; R12[41] = 3; R12[42] = 2; R12[43] = 3; R12[44] = 2;
-
-// Staircase (60-65)
-R16[60] = 1;
-R16[61] = R15[61] = 1;
-R16[62] = R15[62] = R14[62] = 1;
-R16[63] = R15[63] = R14[63] = R13[63] = 1;
-
-// Long gap with platforms (70-85)
-for (let i = 70; i < 85; i++) G[i] = 0;
-for (let i = 72; i < 76; i++) R12[i] = 2;
-for (let i = 79; i < 83; i++) R12[i] = 2;
-
-// High challenge (90-110)
-R11[95] = 3;
-R13[95] = 2;
-for (let i = 100; i < 110; i++) {
-  if (i % 2 === 0) R13[i] = 2;
-  else R11[i] = 3;
-}
-
-// Another pit (120-125)
-for (let i = 120; i < 125; i++) G[i] = 0;
-
-// Castle-like structure (140-160)
-for (let i = 140; i < 160; i++) {
-  R16[i] = 1;
-  if (i % 5 === 0) {
-    R15[i] = 1;
-    R14[i] = 1;
+    if (chunkType < 0.2) {
+      // Pits
+      for (let i = 0; i < 3 + Math.floor(Math.random() * 3); i++) {
+        if (currentX + i < MAX_TILES - 20) G[currentX + i] = 0;
+      }
+      // Add a platform above the pit half the time
+      if (Math.random() > 0.5) {
+        for (let i = 0; i < 4; i++) R(13)[currentX + i] = TileType.BRICK;
+      }
+      currentX += 6;
+    } else if (chunkType < 0.4) {
+      // Staircase or Walls
+      const height = 1 + Math.floor(Math.random() * 4);
+      for (let i = 0; i < height; i++) {
+        for (let j = i; j < height; j++) {
+          if (currentX + i < MAX_TILES - 20) R(rows - 2 - j)[currentX + i] = 1;
+        }
+      }
+      currentX += height + 2;
+    } else if (chunkType < 0.7) {
+      // Floating bricks & Questions
+      for (let i = 0; i < chunkLength; i++) {
+        if (Math.random() < 0.3) {
+          R(12)[currentX + i] = (Math.random() > 0.7) ? TileType.QUESTION : TileType.BRICK;
+        }
+      }
+      currentX += chunkLength;
+    } else {
+      // Ground with some obstacles
+      if (Math.random() > 0.6) {
+        const obsX = currentX + Math.floor(Math.random() * 5);
+        R(rows - 2)[obsX] = TileType.BRICK;
+        R(rows - 3)[obsX] = TileType.BRICK;
+      }
+      currentX += chunkLength;
+    }
   }
+
+  // 3. Victory Run (Last 20 tiles)
+  for (let i = MAX_TILES - 20; i < MAX_TILES; i++) {
+    G[i] = 1;
+  }
+  R(rows - 2)[MAX_TILES - 5] = 1;
+  R(rows - 3)[MAX_TILES - 5] = 1;
+  R(rows - 4)[MAX_TILES - 5] = 1;
+
+  return grid;
 }
 
-// End stretch
-for (let i = 180; i < 195; i++) {
-  if (i % 3 === 0) R13[i] = 3;
-}
-
-export const mapData: number[][] = [
-  R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, G
-];
-
-export const creaturePosY = (mapData.length - 2) * TILE_SIZE;
+export const creaturePosY = 16 * TILE_SIZE;
