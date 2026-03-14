@@ -165,20 +165,20 @@ export class GameScene extends Scene {
   }
 
   private updateCamera(mapWidth: number, mapHeight: number) {
-    const targetX = 400 - this.player.x;
-    this.world.x += (targetX - this.world.x) * 0.1;
-    if (this.world.x > 0) this.world.x = 0;
+    const targetX = 400 - this.player.x; // 400 is the center of the screen horizontally
+    this.world.x += (targetX - this.world.x) * 0.1; // smooth camera movement horizontally
+    if (this.world.x > 0) this.world.x = 0; // don't let camera go beyond the left edge of the map
 
     const minWorldX = 800 - mapWidth;
-    if (this.world.x < minWorldX) this.world.x = minWorldX;
+    if (this.world.x < minWorldX) this.world.x = minWorldX; // don't let camera go beyond the right edge of the map
 
-    const targetY = 300 - this.player.y;
-    this.world.y += (targetY - this.world.y) * 0.1;
+    const targetY = 300 - this.player.y; // Handle vertical camera movement
+    this.world.y += (targetY - this.world.y) * 0.1; // smooth camera movement vertically
 
     const maxWorldY = 0;
     const minWorldY = 600 - mapHeight;
-    if (this.world.y > maxWorldY) this.world.y = maxWorldY;
-    if (this.world.y < minWorldY) this.world.y = minWorldY;
+    if (this.world.y > maxWorldY) this.world.y = maxWorldY; // don't let camera go beyond the top edge of the map
+    if (this.world.y < minWorldY) this.world.y = minWorldY; // don't let camera go beyond the bottom edge of the map
   }
 
   private handleTileEvent(event: string, tile: Tile) {

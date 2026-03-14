@@ -32,7 +32,7 @@ export function resolveHorizontal(entity: PhysicalEntity, tileMap: TileMap) {
       entity.x = tRect.x - entRect.width; // adjusted x since spriteRect x might have padding
       // but wait, spriteRect has padding.
       // previous logic: entity.sprite.x = tRect.x - entity.sprite.width;
-      entity.x = tRect.x - entity.width; 
+      entity.x = tRect.x - entity.width;
       if (!entity.isPlayer) entity.vx *= -1; // It's an Enemy
     } else if (entity.vx < 0) {
       // previous logic: entity.sprite.x = tRect.x + tRect.width;
@@ -53,12 +53,12 @@ export function resolveVertical(entity: PhysicalEntity, tileMap: TileMap, onTile
     if (!aabbOverlap(entRect, tRect)) continue;
 
     if (entity.vy > 0) {
-      // previous logic: entity.sprite.y = tRect.y - entity.sprite.height;
+      // stop falling
       entity.y = tRect.y - entity.height;
       entity.vy = 0;
       if (isPlayer) entity.onGround = true;
     } else if (entity.vy < 0) {
-      // previous logic: entity.sprite.y = tRect.y + tRect.height;
+      // stop rising
       entity.y = tRect.y + tRect.height;
       entity.vy = 0;
 
