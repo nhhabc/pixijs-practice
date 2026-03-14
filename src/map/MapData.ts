@@ -8,15 +8,18 @@ export enum TileType {
   COIN = 4,
 }
 
+
 const MAX_TILES = 1000;
+const MAX_ROW = 18;
+
+export const creaturePosY = (MAX_ROW - 1) * TILE_SIZE;
 
 export function generateMapData(): number[][] {
-  const rows = 18;
-  const grid: number[][] = Array.from({ length: rows }, () =>
+  const grid: number[][] = Array.from({ length: MAX_ROW }, () =>
     Array(MAX_TILES).fill(TileType.EMPTY)
   );
 
-  const groundRow = rows - 1;
+  const groundRow = MAX_ROW - 1;
 
   const G = grid[groundRow];
   const R = (y: number) => grid[y];
@@ -150,12 +153,10 @@ export function generateMapData(): number[][] {
   }
 
   // flag pole style stairs
-  R(rows - 2)[MAX_TILES - 10] = TileType.GROUND;
-  R(rows - 3)[MAX_TILES - 10] = TileType.GROUND;
-  R(rows - 4)[MAX_TILES - 10] = TileType.GROUND;
-  R(rows - 5)[MAX_TILES - 10] = TileType.GROUND;
+  R(MAX_ROW - 2)[MAX_TILES - 10] = TileType.GROUND;
+  R(MAX_ROW - 3)[MAX_TILES - 10] = TileType.GROUND;
+  R(MAX_ROW - 4)[MAX_TILES - 10] = TileType.GROUND;
+  R(MAX_ROW - 5)[MAX_TILES - 10] = TileType.GROUND;
 
   return grid;
 }
-
-export const creaturePosY = 16 * TILE_SIZE;

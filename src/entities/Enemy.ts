@@ -59,7 +59,7 @@ export class Enemy extends Sprite {
     resolveVertical(this, tileMap);
   }
 
-  kill() {
+  killed() {
     this.isDead = true;
     this.vx = 0;
     this.scale.y = 0.1;

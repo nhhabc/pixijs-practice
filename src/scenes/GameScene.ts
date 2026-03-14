@@ -124,6 +124,8 @@ export class GameScene extends Scene {
     // --- 2. Update Enemies & Check Collisions ---
     const pRect = spriteRect(this.player);
 
+    const wasFalling = this.player.vy > 0;
+
     for (const enemy of this.enemies) {
       enemy.update(delta, this.tileMap, mapHeight);
 
@@ -132,8 +134,9 @@ export class GameScene extends Scene {
       // Example collision usage
       const eRect = spriteRect(enemy);
       if (aabbOverlap(pRect, eRect)) {
-        if (this.player.vy > 0 && this.player.y + this.player.height < enemy.y + 40) {
-          enemy.kill();
+        const enemyCollisionThreshold = this.player.y + this.player.height < enemy.y + 40;
+        if (wasFalling && enemyCollisionThreshold) {
+          enemy.killed();
           this.player.vy = -8; // bounce off
           this.updateScore(1);
         } else {
