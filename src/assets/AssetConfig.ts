@@ -1,13 +1,13 @@
-import gameMenuBg from "./images/game-menu-bg.png";
-import gamePlayBg from "./images/game-play-bg.png";
-import gameOver from "./images/game-over.png";
-import player from "./sprites/player.png";
-import ground from "./sprites/ground.png";
-import brick from "./sprites/brick.png";
-import question from "./sprites/question.png";
-import empty from "./sprites/empty.png";
-import enemy from "./sprites/enemy.png";
-import coin from "./sprites/coin.png";
+import gameMenuBg from "./images/game-menu-bg.webp";
+import gamePlayBg from "./images/game-play-bg.webp";
+import gameOver from "./images/game-over.webp";
+import player from "./sprites/player.webp";
+import ground from "./sprites/ground.webp";
+import brick from "./sprites/brick.webp";
+import question from "./sprites/question.webp";
+import empty from "./sprites/empty.webp";
+import enemy from "./sprites/enemy.webp";
+import coin from "./sprites/coin.webp";
 
 export const ASSETS = {
   GAME_MENU_BG: gameMenuBg,
