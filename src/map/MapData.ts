@@ -5,6 +5,7 @@ export enum TileType {
   GROUND = 1,
   BRICK = 2,
   QUESTION = 3,
+  COIN = 4,
 }
 
 const MAX_TILES = 1000;
@@ -65,6 +66,7 @@ export function generateMapData(): number[][] {
       }
 
       R(13)[currentX + width + 1] = TileType.BRICK;
+      R(11)[currentX + width + 1] = TileType.COIN; // reward above the brick
 
       currentX += width * 2 + 5;
     }
@@ -81,6 +83,8 @@ export function generateMapData(): number[][] {
 
         if (Math.random() > 0.6) {
           R(y)[x + 1] = TileType.QUESTION;
+        } else if (Math.random() > 0.5) {
+          R(y - 2)[x] = TileType.COIN; // coin above platform
         }
       }
 
@@ -94,6 +98,9 @@ export function generateMapData(): number[][] {
       for (let i = 0; i < height; i++) {
         for (let j = 0; j <= i; j++) {
           R(groundRow - j)[currentX + i] = TileType.GROUND;
+        }
+        if (i > 1 && Math.random() > 0.5) {
+          R(groundRow - i - 1)[currentX + i] = TileType.COIN;
         }
       }
 
@@ -112,6 +119,10 @@ export function generateMapData(): number[][] {
         if (Math.random() > 0.8) {
           R(10)[currentX + i] = TileType.BRICK;
         }
+
+        if (Math.random() > 0.5) {
+          R(groundRow - 1)[currentX + i] = TileType.COIN;
+        }
       }
 
       currentX += length;
@@ -124,6 +135,8 @@ export function generateMapData(): number[][] {
       for (let i = 0; i < length; i++) {
         if (Math.random() > 0.7) {
           G[currentX + i] = TileType.EMPTY;
+        } else if (Math.random() > 0.5) {
+          R(groundRow - 1)[currentX + i] = TileType.COIN;
         }
       }
 

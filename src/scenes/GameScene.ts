@@ -2,24 +2,16 @@ import { Scene, SceneManager } from "../game/SceneManager";
 import { TileMap } from "../map/TileMap";
 import { Keyboard } from "../input/Keyboard";
 import { Assets, Container, Text, TilingSprite } from "pixi.js";
-import { generateMapData } from "../map/MapData";
+import { generateMapData, TileType } from "../map/MapData";
 import { ASSETS } from "../assets/AssetConfig";
 
-// Entities
-import { createPlayer, type Player } from "../entities/Player";
-import { createEnemy, type Enemy } from "../entities/Enemy";
-import { createCoin, type Coin } from "../entities/Coin";
-
-// Systems
-import { playerSystem } from "../systems/playerSystem";
-import { enemySystem } from "../systems/enemySystem";
-import { physicsSystem } from "../systems/physicsSystem";
-import { collisionSystem } from "../systems/collisionSystem";
-import { coinSystem } from "../systems/coinSystem";
-import { cameraSystem } from "../systems/cameraSystem";
-import { timerSystem, type GameState } from "../systems/timerSystem";
+import { Player } from "../entities/Player";
+import { Enemy } from "../entities/Enemy";
+import { Coin } from "../entities/Coin";
 import type { Tile } from "../map/Tile";
 import { GameOverScene } from "./GameOverScene";
+import { timerSystem, type GameState } from "../systems/timerSystem";
+import { aabbOverlap, spriteRect } from "../utils/Collision";
 
 export class GameScene extends Scene {
   private player!: Player;
@@ -75,14 +67,21 @@ export class GameScene extends Scene {
     this.tileMap = new TileMap(this.textures, this.mapData);
     this.world.addChild(this.tileMap);
 
-    // Entity creation via factory
-    this.player = createPlayer(this.textures.player, 64);
-    this.world.addChild(this.player.sprite);
+    // Initialise static coins from map data
+    for (let row = 0; row < this.mapData.length; row++) {
+      for (let col = 0; col < this.mapData[row].length; col++) {
+        if (this.mapData[row][col] === TileType.COIN) {
+          this.spawnCoin(col * 32 + 4, row * 32 + 4, true);
+        }
+      }
+    }
 
-    // Spawn enemies across 1000 tiles (32000 px)
+    // Entity creation (OOP pattern)
+    this.player = new Player(this.textures.player, 64);
+    this.world.addChild(this.player);
+
     const spawnPoints: number[] = [];
     for (let x = 600; x < 30000; x += 500) {
-      // Add some randomness to spacing
       spawnPoints.push(x + Math.random() * 400);
     }
 
@@ -116,34 +115,70 @@ export class GameScene extends Scene {
     const mapWidth = this.mapData[0].length * 32;
     const mapHeight = this.mapData.length * 32;
 
-    // --- 1. Logic & Input Systems ---
-    playerSystem(this.player);
-    enemySystem(this.enemies, this.tileMap, delta, mapHeight);
-    coinSystem(this.coins, delta);
+    // Timer logic
     timerSystem(this.gameState, delta, this.timerText, () => this.gameOver("TIME UP!"));
 
-    // --- 2. Physics & Tile Collision Systems ---
-    physicsSystem(this.player, this.enemies, this.tileMap, delta, (event, tile) => {
-      this.handleTileEvent(event, tile);
-    }, mapWidth);
+    // --- 1. Update Player ---
+    this.player.update(delta, this.tileMap, mapWidth, (event, tile) => this.handleTileEvent(event, tile));
 
-    // --- 3. Entity Interaction Systems ---
-    collisionSystem(this.player, this.enemies, (pts) => this.updateScore(pts), () => this.gameOver());
+    // --- 2. Update Enemies & Check Collisions ---
+    const pRect = spriteRect(this.player);
 
-    // --- 4. Camera & World Systems ---
-    cameraSystem(this.world, this.player, mapWidth, mapHeight);
+    for (const enemy of this.enemies) {
+      enemy.update(delta, this.tileMap, mapHeight);
+
+      if (enemy.isDead || enemy.destroyed) continue;
+
+      // Example collision usage
+      const eRect = spriteRect(enemy);
+      if (aabbOverlap(pRect, eRect)) {
+        if (this.player.vy > 0 && this.player.y + this.player.height < enemy.y + 40) {
+          enemy.kill();
+          this.player.vy = -8; // bounce off
+          this.updateScore(1);
+        } else {
+          this.gameOver();
+        }
+      }
+    }
+
+    // --- 3. Update Coins ---
+    for (const coin of this.coins) {
+      coin.update(this.player, delta, (pts) => this.updateScore(pts));
+    }
+
+    // --- 4. Update Camera ---
+    this.updateCamera(mapWidth, mapHeight);
 
     // --- 5. Background Parallax ---
     this.background.tilePosition.x = this.world.x * 0.5;
     this.background.tilePosition.y = this.world.y * 0.1;
 
-    if (this.player.sprite.y > mapHeight + 100) {
+    // Pitfall check
+    if (this.player.y > mapHeight + 100) {
       this.gameOver("FELL INTO PIT!");
     }
 
-    // --- 5. Cleanup ---
+    // --- 6. Cleanup Destroyed Objects ---
     this.enemies = this.enemies.filter(e => !e.destroyed);
     this.coins = this.coins.filter(c => !c.destroyed);
+  }
+
+  private updateCamera(mapWidth: number, mapHeight: number) {
+    const targetX = 400 - this.player.x;
+    this.world.x += (targetX - this.world.x) * 0.1;
+    if (this.world.x > 0) this.world.x = 0;
+
+    const minWorldX = 800 - mapWidth;
+    if (this.world.x < minWorldX) this.world.x = minWorldX;
+
+    const targetY = 300 - this.player.y;
+    this.world.y += (targetY - this.world.y) * 0.1;
+
+    const maxWorldY = 0;
+    const minWorldY = 600 - mapHeight;
+    if (this.world.y > maxWorldY) this.world.y = maxWorldY;
+    if (this.world.y < minWorldY) this.world.y = minWorldY;
   }
 
   private handleTileEvent(event: string, tile: Tile) {
@@ -157,15 +192,15 @@ export class GameScene extends Scene {
   }
 
   private spawnEnemy(x: number, y?: number) {
-    const enemy = createEnemy(this.textures.enemy, x, y);
+    const enemy = new Enemy(this.textures.enemy, x, y);
     this.enemies.push(enemy);
-    this.world.addChild(enemy.sprite);
+    this.world.addChild(enemy);
   }
 
-  private spawnCoin(x: number, y: number) {
-    const coin = createCoin(this.textures.coin, x, y);
+  private spawnCoin(x: number, y: number, isStatic: boolean = false) {
+    const coin = new Coin(this.textures.coin, x, y, isStatic);
     this.coins.push(coin);
-    this.world.addChild(coin.sprite);
+    this.world.addChild(coin);
   }
 
   private updateScore(points: number) {

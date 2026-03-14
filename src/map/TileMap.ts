@@ -27,7 +27,7 @@ export class TileMap extends Container {
       for (let col = 0; col < this.mapData[row].length; col++) {
         const type = this.mapData[row][col] as TileType;
 
-        if (type === TileType.EMPTY) {
+        if (type === TileType.EMPTY || type === TileType.COIN) {
           this.grid[row][col] = null;
           continue;
         }

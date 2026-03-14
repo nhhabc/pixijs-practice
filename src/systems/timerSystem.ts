@@ -6,9 +6,9 @@ export interface GameState {
 }
 
 export function timerSystem(
-  state: GameState, 
-  delta: number, 
-  timerText: Text, 
+  state: GameState,
+  delta: number,
+  timerText: Text,
   onTimeUp: () => void
 ) {
   state.frameCount += delta;
